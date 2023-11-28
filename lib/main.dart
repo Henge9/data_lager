@@ -9,7 +9,7 @@ void main() {
 
 class MyApp extends StatelessWidget {
   MyApp({super.key});
-  final DbService dbService = DbService();
+  final dbService = DbService();
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -71,11 +71,9 @@ class _MyCustomFormState extends State<MyCustomForm> {
           ),
           TextButton(
             onPressed: () {
-              widget.dbService.putMessagesInDb(
-                Message(
-                    title: titleTextController.text,
-                    text: textTextcontroller.text),
-              );
+              widget.dbService.putMessagesInDb(Message()
+                ..title = textTextcontroller.text
+                ..text = textTextcontroller.text);
             },
             child: Text('save message'),
           ),
