@@ -1,5 +1,6 @@
 import 'package:data_lager/database_service.dart';
 import 'package:data_lager/model.dart';
+import 'package:data_lager/provider.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -9,19 +10,22 @@ void main() {
 
 class MyApp extends StatelessWidget {
   MyApp({super.key});
-  final dbService = DbService();
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'My messages',
-      home: MyCustomForm(dbService),
+    final dbService = DbService();
+    return Provider(
+      data: dbService,
+      child: const MaterialApp(
+        title: 'My messages',
+        home: MyCustomForm(),
+      ),
     );
   }
 }
 
 class MyCustomForm extends StatefulWidget {
-  final DbService dbService;
-  const MyCustomForm(this.dbService, {Key? key}) : super(key: key);
+  const MyCustomForm({Key? key}) : super(key: key);
 
   @override
   State<MyCustomForm> createState() => _MyCustomFormState();
@@ -38,8 +42,8 @@ class _MyCustomFormState extends State<MyCustomForm> {
     super.dispose();
   }
 
-  getMessages() async {
-    List<Message> newList = await widget.dbService.getAllMessagesFromDb();
+  getMessages(DbService service) async {
+    List<Message> newList = await service.getAllMessagesFromDb();
     List<String> _newList = newList
         .map((messages) => '${messages.title} || ${messages.text}')
         .toList();
@@ -51,9 +55,10 @@ class _MyCustomFormState extends State<MyCustomForm> {
 
   @override
   Widget build(BuildContext context) {
+    DbService service = Provider.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Messageboard'),
+        title: const Text('Messageboard'),
       ),
       body: Column(
         children: [
@@ -71,17 +76,17 @@ class _MyCustomFormState extends State<MyCustomForm> {
           ),
           TextButton(
             onPressed: () {
-              widget.dbService.putMessagesInDb(Message()
+              service.putMessagesInDb(Message()
                 ..title = textTextcontroller.text
                 ..text = textTextcontroller.text);
             },
-            child: Text('save message'),
+            child: const Text('save message'),
           ),
           TextButton(
             onPressed: () {
-              getMessages();
+              getMessages(service);
             },
-            child: Text('Get all messages'),
+            child: const Text('Get all messages'),
           ),
           for (String item in _list) Text(item),
         ],
